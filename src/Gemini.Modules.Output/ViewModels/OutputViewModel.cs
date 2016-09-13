@@ -1,68 +1,97 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Text;
+using System.Windows.Documents;
 using Caliburn.Micro;
 using Gemini.Framework;
 using Gemini.Framework.Services;
-using Gemini.Modules.Output.Views;
 using Gemini.Modules.Output.Properties;
+using Gemini.Modules.Output.Views;
+using System.Windows.Media;
 
 namespace Gemini.Modules.Output.ViewModels
 {
-	[Export(typeof(IOutput))]
-	public class OutputViewModel : Tool, IOutput
-	{
-        private readonly StringBuilder _stringBuilder;
-		private readonly OutputWriter _writer;
-		private IOutputView _view;
+    [Export(typeof(IOutput))]
+    public class OutputViewModel : Tool, IOutput
+    {
+        private readonly OutputWriter _writer;
+        private IOutputView _view;
 
-		public override PaneLocation PreferredLocation
-		{
-			get { return PaneLocation.Bottom; }
-		}
+        public FlowDocument Document { get; private set; }
+        private Paragraph _paragraph;
 
-		public TextWriter Writer
-		{
-			get { return _writer; }
-		}
+        public override PaneLocation PreferredLocation
+        {
+            get { return PaneLocation.Bottom; }
+        }
 
-		public OutputViewModel()
-		{
-		    DisplayName = Resources.OutputDisplayName;
-			_stringBuilder = new StringBuilder();
-			_writer = new OutputWriter(this);
-		}
+        public TextWriter Writer
+        {
+            get { return _writer; }
+        }
 
-		public void Clear()
-		{
-			if (_view != null)
-				Execute.OnUIThread(() => _view.Clear());
-			_stringBuilder.Clear();
-		}
+        public OutputViewModel()
+        {
+            DisplayName = Resources.OutputDisplayName;
+            _writer = new OutputWriter(this);
+            Clear();
+        }
 
-		public void AppendLine(string text)
-		{
-			Append(text + Environment.NewLine);
-		}
+        public void Clear()
+        {
+            Execute.OnUIThread(() => {
+                Document = new FlowDocument();
+                Document.FontFamily = new FontFamily("Consolas");
+                Document.FontSize = 12;
 
-		public void Append(string text)
-		{
-			_stringBuilder.Append(text);
-			OnTextChanged();
-		}
+                _paragraph = new Paragraph();
+                Document.Blocks.Add(_paragraph);
+            });
+        }
 
-		private void OnTextChanged()
-		{
-            if (_view != null)
-                Execute.OnUIThread(() => _view.SetText(_stringBuilder.ToString()));
-		}
+        public void AppendLine(string text)
+        {
+            Append(text + Environment.NewLine);
+        }
 
-		protected override void OnViewLoaded(object view)
-		{
-			_view = (IOutputView) view;
-			_view.SetText(_stringBuilder.ToString());
-			_view.ScrollToEnd();
-		}
-	}
+        private static readonly string[] _newLine = new[] { Environment.NewLine };
+
+        public void Append(string text)
+        {
+            Execute.OnUIThread(() => {
+                var lines = text.Split(_newLine, StringSplitOptions.None);
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        var run = new Run(line);
+                        _paragraph.Inlines.Add(run);
+                    }
+
+                    if (i < lines.Length - 1)
+                    {
+                        _paragraph.Inlines.Add(new LineBreak());
+                    }
+                }
+
+                if (_view != null)
+                    _view.StartScrollTimer();
+            });
+        }
+
+        private void ScrollRun_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var run = sender as Run;
+            run.Loaded -= ScrollRun_Loaded;
+            run.BringIntoView();
+        }
+
+        protected override void OnViewLoaded(object view)
+        {
+            _view = (IOutputView) view;
+            _view.StartScrollTimer();
+        }
+    }
 }
