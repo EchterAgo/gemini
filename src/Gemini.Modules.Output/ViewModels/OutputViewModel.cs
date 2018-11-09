@@ -2,12 +2,12 @@
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Documents;
+using System.Windows.Media;
 using Caliburn.Micro;
 using Gemini.Framework;
 using Gemini.Framework.Services;
 using Gemini.Modules.Output.Properties;
 using Gemini.Modules.Output.Views;
-using System.Windows.Media;
 
 namespace Gemini.Modules.Output.ViewModels
 {
@@ -55,6 +55,7 @@ namespace Gemini.Modules.Output.ViewModels
         }
 
         private static readonly string[] _newLine = new[] { Environment.NewLine };
+        private static readonly int _maxLines = 1000;
 
         public void Append(string text)
         {
@@ -73,6 +74,16 @@ namespace Gemini.Modules.Output.ViewModels
                     if (i < lines.Length - 1)
                     {
                         _paragraph.Inlines.Add(new LineBreak());
+                    }
+                }
+
+                var numLines = _paragraph.Inlines.Count / 2;
+                if (numLines > _maxLines)
+                {
+                    var toRemove = (numLines - _maxLines) * 2;
+                    for (var i = 0; i < toRemove; i++)
+                    {
+                        _paragraph.Inlines.Remove(_paragraph.Inlines.FirstInline);
                     }
                 }
 

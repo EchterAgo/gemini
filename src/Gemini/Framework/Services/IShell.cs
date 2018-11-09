@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Caliburn.Micro;
 using Gemini.Modules.MainMenu;
 using Gemini.Modules.StatusBar;
@@ -25,6 +25,9 @@ namespace Gemini.Framework.Services
 
 		IObservableCollection<IDocument> Documents { get; }
 		IObservableCollection<ITool> Tools { get; }
+
+        void AddTool<TTool>() where TTool : ITool;
+        void AddTool(ITool model);
 
         void ShowTool<TTool>() where TTool : ITool;
 		void ShowTool(ITool model);

@@ -1,4 +1,4 @@
-﻿using Gemini.Framework.Util;
+using Gemini.Framework.Util;
 using Gemini.Framework.Win32;
 using System;
 using System.Windows;
@@ -246,8 +246,6 @@ namespace Gemini.Framework.Controls
         {
             EndMouseCapture(false);
         }
-
-        private bool _failing = false;
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {

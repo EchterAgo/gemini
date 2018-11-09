@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -159,23 +159,34 @@ namespace Gemini.Modules.Shell.ViewModels
             base.OnViewLoaded(view);
         }
 
-	    public void ShowTool<TTool>()
+        public void AddTool<TTool>()
             where TTool : ITool
-	    {
-	        ShowTool(IoC.Get<TTool>());
-	    }
+        {
+            AddTool(IoC.Get<TTool>());
+        }
 
-	    public void ShowTool(ITool model)
-		{
-		    if (Tools.Contains(model))
-		        model.IsVisible = true;
-		    else
-		        Tools.Add(model);
-		    model.IsSelected = true;
-	        ActiveLayoutItem = model;
-		}
+        public void AddTool(ITool model)
+        {
+            if (Tools.Contains(model))
+                model.IsVisible = true;
+            else
+                Tools.Add(model);
+        }
 
-		public void OpenDocument(IDocument model)
+        public void ShowTool<TTool>()
+            where TTool : ITool
+        {
+            ShowTool(IoC.Get<TTool>());
+        }
+
+        public void ShowTool(ITool model)
+        {
+            AddTool(model);
+            model.IsSelected = true;
+            ActiveLayoutItem = model;
+        }
+
+        public void OpenDocument(IDocument model)
 		{
 			ActivateItem(model);
 		}

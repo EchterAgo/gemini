@@ -115,6 +115,15 @@ namespace Gemini.Modules.Inspector.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Select.
+        /// </summary>
+        internal static string FileBrowserSelect {
+            get {
+                return ResourceManager.GetString("FileBrowserSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Miscellaneous.
         /// </summary>
         internal static string InspectorBuilderMiscellaneous {

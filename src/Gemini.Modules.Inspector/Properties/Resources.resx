@@ -159,4 +159,7 @@
   <data name="ResetObjectValueActionFormat" xml:space="preserve">
     <value>Reset {0} from {1} to {2}</value>
   </data>
+  <data name="FileBrowserSelect" xml:space="preserve">
+    <value>_Select</value>
+  </data>
 </root>

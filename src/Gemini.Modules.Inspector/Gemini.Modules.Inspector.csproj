@@ -112,6 +112,9 @@
       <DependentUpon>AdvancedSliderEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Inspectors\AdvancedSliderEditorViewModel.cs" />
+    <Compile Include="Inspectors\FileBrowserEditorView.xaml.cs">
+      <DependentUpon>FileBrowserEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Inspectors\BitmapSourceEditorView.xaml.cs">
       <DependentUpon>BitmapSourceEditorView.xaml</DependentUpon>
     </Compile>
@@ -131,6 +134,7 @@
     <Compile Include="Inspectors\TextBoxEditorView.xaml.cs">
       <DependentUpon>TextBoxEditorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Inspectors\FileBrowserEditorViewModel.cs" />
     <Compile Include="Inspectors\TextBoxEditorViewModel.cs" />
     <Compile Include="Inspectors\EnumEditorView.xaml.cs">
       <DependentUpon>EnumEditorView.xaml</DependentUpon>
@@ -144,7 +148,6 @@
     </Compile>
     <Compile Include="Inspectors\ColorEditorViewModel.cs" />
     <Compile Include="Inspectors\EditorBase.cs" />
-    <Compile Include="Inspectors\InspectorBase.cs" />
     <Compile Include="Inspectors\Point3DEditorView.xaml.cs">
       <DependentUpon>Point3DEditorView.xaml</DependentUpon>
     </Compile>
@@ -192,6 +195,10 @@
     <Page Include="Inspectors\AdvancedSliderEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Inspectors\FileBrowserEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Inspectors\BitmapSourceEditorView.xaml">
       <SubType>Designer</SubType>

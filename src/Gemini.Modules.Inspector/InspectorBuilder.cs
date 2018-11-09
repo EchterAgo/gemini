@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -24,6 +24,12 @@ namespace Gemini.Modules.Inspector
         public InspectorBuilder()
         {
             _inspectors = new List<IInspector>();
+        }
+
+        public TBuilder WithInspector(IInspector inspector)
+        {
+            _inspectors.Add(inspector);
+            return (TBuilder)this;
         }
 
         public TBuilder WithCollapsibleGroup(string name, Func<CollapsibleGroupBuilder, CollapsibleGroupBuilder> callback)
@@ -110,7 +116,22 @@ namespace Gemini.Modules.Inspector
 
         public TBuilder WithObjectProperty(object instance, PropertyDescriptor property)
         {
-            var editor = DefaultPropertyInspectors.CreateEditor(property);
+            return WithObjectProperty(instance, property, out var editor);
+        }
+
+        public TBuilder WithObjectProperty(object instance, PropertyDescriptor property, out IEditor editor)
+        {
+            editor = DefaultPropertyInspectors.CreateEditor(property);
+            if (editor != null) {
+                editor.BoundPropertyDescriptor = new BoundPropertyDescriptor(instance, property);
+                _inspectors.Add(editor);
+            }
+
+            return (TBuilder)this;
+        }
+
+        public TBuilder WithObjectProperty(object instance, PropertyDescriptor property, IEditor editor)
+        {
             if (editor != null) {
                 editor.BoundPropertyDescriptor = new BoundPropertyDescriptor(instance, property);
                 _inspectors.Add(editor);

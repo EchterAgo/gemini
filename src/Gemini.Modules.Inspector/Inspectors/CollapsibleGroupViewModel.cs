@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
+using Caliburn.Micro;
+using System.Collections.Generic;
 
 namespace Gemini.Modules.Inspector.Inspectors
 {
-    public class CollapsibleGroupViewModel : InspectorBase
+    public class CollapsibleGroupViewModel : PropertyChangedBase, IInspector
     {
         private static readonly Dictionary<string, bool> PersistedExpandCollapseStates = new Dictionary<string, bool>();
 
         private readonly string _name;
         private readonly IEnumerable<IInspector> _children;
 
-        public override string Name
+        public string Name
         {
             get { return _name; }
         }
 
-        public override bool IsReadOnly
+        public bool IsReadOnly
         {
             get { return false; }
         }
@@ -43,6 +44,16 @@ namespace Gemini.Modules.Inspector.Inspectors
 
             if (!PersistedExpandCollapseStates.TryGetValue(_name, out _isExpanded))
                 _isExpanded = true;
+        }
+
+        public bool CanReset => false;
+
+        public void Reset() => throw new System.NotImplementedException();
+
+        public void Dispose()
+        {
+            foreach (var c in Children)
+                c.Dispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +8,7 @@ using Gemini.Framework.Services;
 
 namespace Gemini.Modules.Inspector.Inspectors
 {
-    public abstract class EditorBase<TValue> : InspectorBase, IEditor, IDisposable
+    public abstract class EditorBase<TValue> : PropertyChangedBase, IEditor, IDisposable
     {
         private BoundPropertyDescriptor _boundPropertyDescriptor;
         private IShell _shell;
@@ -38,22 +38,22 @@ namespace Gemini.Modules.Inspector.Inspectors
 
         public void Reset()
         {
-            if (CanReset)
+            if (!CanReset)
+                return;
+
+            var item = _shell.ActiveItem;
+            if (IsUndoEnabled && item != null)
             {
-                var item = _shell.ActiveItem;
-                if (IsUndoEnabled && item != null)
-                {
-                    item.UndoRedoManager.ExecuteAction(
-                        new ResetObjectValueAction(BoundPropertyDescriptor, StringConverter));
-                }
-                else
-                {
-                    BoundPropertyDescriptor.PropertyDescriptor.ResetValue(BoundPropertyDescriptor.PropertyOwner);
-                }
+                item.UndoRedoManager.ExecuteAction(
+                    new ResetObjectValueAction(BoundPropertyDescriptor, StringConverter));
+            }
+            else
+            {
+                BoundPropertyDescriptor.PropertyDescriptor.ResetValue(BoundPropertyDescriptor.PropertyOwner);
             }
         }
 
-        public override string Name
+        public string Name
         {
             get { return BoundPropertyDescriptor.PropertyDescriptor.DisplayName; }
         }
@@ -108,7 +108,7 @@ namespace Gemini.Modules.Inspector.Inspectors
             }
         }
 
-        public override bool IsReadOnly
+        public bool IsReadOnly
         {
             get { return BoundPropertyDescriptor.PropertyDescriptor.IsReadOnly; }
         }
@@ -137,9 +137,9 @@ namespace Gemini.Modules.Inspector.Inspectors
             OnValueChanged();
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals(BoundPropertyDescriptor.PropertyDescriptor.Name))
+            if (e.PropertyName.Equals(BoundPropertyDescriptor?.PropertyDescriptor?.Name))
                 OnValueChanged();
         }
 
