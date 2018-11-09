@@ -1,4 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using Caliburn.Micro;
+using System;
+using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Threading;
 
 namespace Gemini.Modules.Output.Views
 {
@@ -7,31 +12,42 @@ namespace Gemini.Modules.Output.Views
 	/// </summary>
 	public partial class OutputView : UserControl, IOutputView
 	{
+        private DispatcherTimer _timer;
+        //private static readonly uint _maxStartsSinceLastScroll = 100;
+        //private uint _startsSinceLastScroll;
+
 		public OutputView()
 		{
 			InitializeComponent();
+
+            _timer = new DispatcherTimer();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 250);
+            _timer.Tick += _timer_Tick;
 		}
 
-		public void ScrollToEnd()
-		{
-			outputText.ScrollToEnd();
-		}
+        private void ScrollToEnd()
+        {
+            //_startsSinceLastScroll = 0;
 
-		public void Clear()
-		{
-			outputText.Clear();
-		}
+            var paragraph = outputText.Document.Blocks.FirstBlock as Paragraph;
+            var lastInline = paragraph.Inlines.Where(i => i.IsLoaded).LastOrDefault();
+            if (lastInline == null)
+                return;
 
-		public void AppendText(string text)
-		{
-			outputText.AppendText(text);
-			ScrollToEnd();
-		}
+            lastInline.BringIntoView();
+        }
 
-		public void SetText(string text)
-		{
-			outputText.Text = text;
-			ScrollToEnd();
-		}
-	}
+        private void _timer_Tick(object sender, EventArgs e)
+        {
+            ScrollToEnd();
+            _timer.Stop();
+        }
+
+        public void StartScrollTimer()
+        {
+            _timer.Start();
+            //if (++_startsSinceLastScroll >= _maxStartsSinceLastScroll)
+                //Execute.OnUIThread(() => ScrollToEnd());
+        }
+    }
 }
